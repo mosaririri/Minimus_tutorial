@@ -13,6 +13,18 @@ export class FbService {
     public auth: AngularFireLiteAuth,
   ) { }
 
+  isAuth(){
+    return this.auth.isAuthenticated();
+  }
+
+  signin(email, pass){
+    return this.auth.signin(email,pass);
+  }
+
+  signup(email, pass){
+    return this.auth.signup(email, pass);
+  }
+
   getCities(){
     return this.auth.uid().pipe(switchMap((uid) => {
       return this.fs.read(`{$uid}`);
