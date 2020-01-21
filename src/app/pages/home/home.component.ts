@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FbService } from 'src/app/service/fb/fb.service';
 
 @Component({
   selector: 'app-home',
@@ -7,9 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  constructor() { }
+  cities;
+
+  constructor(
+    public fb: FbService
+  ) { }
 
   ngOnInit() {
+    this.cities = this.fb.getCities();
+    console.log(this.cities);
   }
 
 }

@@ -12,7 +12,7 @@
     background-color: #fff;
     border-radius: 1rem;
     display: flex;
-    margin-top: -4rem;
+    /* margin-top: -4rem; */
   }
   
   .add-city-btn {
@@ -111,7 +111,7 @@
     height: 100%;
   }
   
-  .fav-city-image {;
+  .fav-city-image {
     position: absolute;
     right: 0;
     bottom: 0;
@@ -297,7 +297,7 @@
     background-color: #fff;
     border-radius: 1rem;
     display: flex;
-    margin-top: -4rem;
+    /* margin-top: -4rem; */
   }
   
   .add-city-btn {

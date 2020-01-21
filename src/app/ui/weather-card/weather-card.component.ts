@@ -4,6 +4,7 @@ import { WeatherService } from '../../service/weather/weather.service';
 import { UiService } from '../../service/ui/ui.service';
 import { Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
+import { FbService } from 'src/app/service/fb/fb.service';
 
 
 @Component({
@@ -62,7 +63,7 @@ export class WeatherCardComponent implements OnInit, OnDestroy {
     public weather: WeatherService,
     public router: Router,
     public ui: UiService,
-    // public fb: FbService,
+    public fb: FbService,
   ) { }
 
   ngOnInit() {
@@ -76,13 +77,24 @@ export class WeatherCardComponent implements OnInit, OnDestroy {
   }
 
   openDetails() {
+    console.log(this.addMode);
     if(!this.addMode){
       this.router.navigateByUrl('/details/' + this.cityName);
     }
   }
 
   addCity() {
-
+    this.fb.addCity(this.cityName).subscribe(() => {
+      this.cityName = null;
+      this.maxTemp = null;
+      this.minTemp = null;
+      this.state = null;
+      this.cityAdded = true;
+      this.cityStored.emit();
+      setTimeout(() => {
+       this.cityAdded = false; 
+      }, 2000);
+    });
   }
 
 }

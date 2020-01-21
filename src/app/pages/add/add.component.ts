@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { WeatherService } from '../service/weather/weather.service';
-import { FbService } from '../service/fb/fb.service';
+import { WeatherService } from '../../service/weather/weather.service';
+import { FbService } from '../../service/fb/fb.service';
 import { first } from 'rxjs/operators';
 
 @Component({

@@ -18,6 +18,12 @@ Weather Card Styling
     border-radius: 1.75rem;
     animation: 1.25s ease-in-out 0ms 1 fadein;
   }
+
+  .weather__card-add {
+    cursor: auto;
+    margin: 0 auto;
+    box-shadow: rgba(0, 0, 255, 0.5);
+  }
   
   .weather__card-dark {
     background: linear-gradient(to bottom, #711B86, #00057A);

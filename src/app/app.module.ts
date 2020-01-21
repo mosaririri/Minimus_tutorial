@@ -8,7 +8,7 @@ import { WeatherCardComponent } from './ui/weather-card/weather-card.component';
 import { AddCardComponent } from './ui/add-card/add-card.component';
 import { DetailsComponent } from './pages/details/details.component';
 import { HttpClientModule } from '@angular/common/http';
-import { AddComponent } from './add/add.component';
+import { AddComponent } from './pages/add/add.component';
 import { NguiAutoCompleteModule } from '@ngui/auto-complete';
 import { AngularFireLite } from 'angularfire-lite';
 import { environment } from 'src/environments/environment';

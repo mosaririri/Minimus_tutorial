@@ -18,7 +18,7 @@ export class FbService {
   }
 
   signin(email, pass){
-    return this.auth.signin(email,pass);
+    return this.auth.signin(email, pass);
   }
 
   signup(email, pass){
@@ -27,7 +27,7 @@ export class FbService {
 
   getCities(){
     return this.auth.uid().pipe(switchMap((uid) => {
-      return this.fs.read(`{$uid}`);
+      return this.fs.read(`${uid}`);
     })); 
   }
 
