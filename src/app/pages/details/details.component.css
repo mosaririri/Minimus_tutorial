@@ -1,12 +1,17 @@
+.details-page__wrapper {
+  background: linear-gradient(to top, #86dbff 0%, #e0c3fc 199%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  padding: 2rem 9;
+  width: 100vw;
+}
+
 .details-page__wrapper-dark {
     background: linear-gradient(#FC7DB8, #495CFC);
-    height: 100%;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
   }
   
   .background-gradient__circle {
@@ -15,13 +20,23 @@
     right: 0;
     transform: translateY(-50%);
     z-index: 1;
-    height: 120%;
+    height: 100rem;
+    width: 100rem;
+    border-radius: 50%;
+    background: linear-gradient(-225deg, #ffffff 0%, #ffe29f 10%, #ffa99f 48%, #ffd1ff 100%);
+    animation: scaleup-circle 900ms ease-in-out forwards;
+    transition: background 1s ease-in-out;
   }
   
-  .main-weather__card-dark {
+  .background-gradient__circle-dark {
+    transition: background 1s ease-in-out;
+    background: linear-gradient(to bottom,  #ff8888, #6676ff);
+  }
+
+  .main-weather__card {
     background-color: white;
     height: 85%;
-    width: 60%;
+    width: 80%;
     border-radius: 1rem;
     position: relative;
     z-index: 3;
@@ -40,7 +55,7 @@
   
   .back__button {
     position: absolute;
-    top: 2rem;
+    top: 5rem;
     left: 2.25rem;
     width: 5rem;
     cursor: pointer;

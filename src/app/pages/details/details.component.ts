@@ -1,7 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable, forkJoin } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { WeatherService } from 'src/app/service/weather/weather.service';
+import { TwitterService } from 'src/app/service/twitter/twitter.service';
+import { UiService } from 'src/app/service/ui/ui.service';
+import { concatMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-details',
@@ -10,97 +13,97 @@ import { WeatherService } from 'src/app/service/weather/weather.service';
 })
 export class DetailsComponent implements OnInit, OnDestroy {
 
+  darkMode: boolean;
   city: string;
   state: string;
   temp: number;
   hum: number;
   wind: number;
-
   today: string;
-
-  day1Name: string;
-  day1State: string;
-  day1Temp: number;
-
-
-  day2Name: string;
-  day2State: string;
-  day2Temp: number;
-
-
-  day3Name: string;
-  day3State: string;
-  day3Temp: number;
-
-
-  day4Name: string;
-  day4State: string;
-  day4Temp: number;
-
-
-  day5Name: string;
-  day5State: string;
-  day5Temp: number;
-
-  // subscribe
+  daysForecast:Object;
+  cityIlluminationPath: string;
   sub1: Subscription;
   sub2: Subscription;
-  sub3: Subscription;
-  sub4: Subscription;
-  sub5: Subscription;
+  errorMessage: string;
+  tweets$: Observable<any>;
 
-  constructor(public activeRouter: ActivatedRoute, public weather: WeatherService) { }
+  constructor(
+    public twitter: TwitterService,
+    public activeRouter: ActivatedRoute,
+    public weather: WeatherService,
+    public ui: UiService,
+    ) { }
 
   ngOnInit() {
+
+    this.sub1 = this.ui.darkModeState.subscribe((isDark) => {
+      this.darkMode = isDark;
+    });
 
     const todayNumberInWeek = new Date().getDay();
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     this.today = days[todayNumberInWeek];
-    
-    this.activeRouter.paramMap.subscribe((route: any) => {
-
+    this.sub2 = this.activeRouter.paramMap.pipe(concatMap((route: any) => {
       this.city = route.params.city;
-      this.sub1 = this.weather.getWeatherState(this.city).subscribe((state) => this.state = state);
-      this.sub2 = this.weather.getCurrentTemp(this.city).subscribe((temperature) => this.temp = temperature);
-      this.sub3 = this.weather.getCurrentHum(this.city).subscribe((humidity) => this.hum = humidity);
-      this.sub4 = this.weather.getCurrentWind(this.city).subscribe((windspeed) => this.wind = windspeed);
-      this.sub5 = this.weather.getForecast(this.city).subscribe((data:any) => {
-        console.log(data);
-        for (let i = 0; i < data.length; i++) {
-          const date = new Date(data[i].dt_txt).getDay();
-          console.log(days[date]);
-          if(((date === todayNumberInWeek + 1) || (todayNumberInWeek === 6 && date === 0)) && !this.day1Name){
-            this.day1Name = days[date];
-            this.day1State = data[i].weather[0].main;
-            this.day1Temp = Math.round(data[i].main.temp);
-          }else if(!this.day1Name && !this.day2Name && days[date] !== this.day1Name){
-            this.day2Name = days[date];
-            this.day2State = data[i].weather[0].main;
-            this.day2Temp = Math.round(data[i].main.temp);
-          }else if(!this.day2Name && !this.day3Name && days[date] !== this.day2Name){
-            this.day3Name = days[date];
-            this.day3State = data[i].weather[0].main;
-            this.day3Temp = Math.round(data[i].main.temp);
-          }else if(!this.day3Name && !this.day4Name && days[date] !== this.day3Name){
-            this.day4Name = days[date];
-            this.day4State = data[i].weather[0].main;
-            this.day4Temp = Math.round(data[i].main.temp);
-          }else if(!this.day4Name && !this.day5Name && days[date] !== this.day4Name){
-            this.day5Name = days[date];
-            this.day5State = data[i].weather[0].main;
-            this.day5Temp = Math.round(data[i].main.temp);
+      console.log(this.city.toLowerCase());
+      switch (this.city.toLowerCase()){
+        case 'paris':
+          this.cityIlluminationPath = '../../../assets/cities/france.svg';
+          break;
+          case 'doha':
+            this.cityIlluminationPath = '../../assets/cities/qatar.svg';
+            break;
+          case 'rabat':
+            this.cityIlluminationPath = '../../assets/cities/rabat.svg';
+            break;
+          case 'tunis':
+            this.cityIlluminationPath = '../../assets/cities/tunis.svg';
+            break;
+          case 'tokyo':
+            this.cityIlluminationPath = '../../assets/cities/japan.svg';
+            break;
+          default:
+            this.cityIlluminationPath = '../../assets/cities/default.svg'; 
+      }
+      return forkJoin(this.weather.getWeather(this.city), this.weather.getForecast(this.city));
+    })
+    ).subscribe((payload: any) => {
+      this.state = payload[0].weather[0].main;
+      this.temp = Math.ceil(Number(payload[0].main.temp));
+      this.hum = payload[0].main.humidity;
+      this.wind = Math.round(Math.round(payload[0].wind.speed));
+      const dates = {};
+      for (const res of payload[1]) {
+        const date = new Date(res.dt_txt).toDateString().split(' ')[0];
+        if (dates[date]) {
+         dates[date].counter += 1;
+         dates[date].temp += res.main.temp;
+        } else {
+          dates[date] = {
+            state: res.weather[0].main,
+            temp: res.main.temp,
+            counter: 1
           }
         }
+      }
+      Object.keys(dates).forEach((day) => {
+        dates[day].temp = Math.round(dates[day].temp / dates[day].counter);
       });
+      delete dates[Object.keys(dates)[0]];
+      this.daysForecast = dates;
+    }, (err) => {
+      this.errorMessage = err.error.message;
+      setTimeout(() => {
+       this.errorMessage = ''; 
+      }, 2500);
     });
+
+    this.tweets$ = this.twitter.fetchTweets(this.city);
 
   }
 
   ngOnDestroy(){
     this.sub1.unsubscribe();
     this.sub2.unsubscribe();
-    this.sub3.unsubscribe();
-    this.sub4.unsubscribe();
-    this.sub5.unsubscribe();
-  }
+ }
 }

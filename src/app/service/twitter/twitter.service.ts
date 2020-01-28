@@ -12,7 +12,7 @@ export class TwitterService {
   ) { }
 
   fetchTweets(city){
-    return this.http.post('https://336e847e.ngrok.io/minimus-weather/us-central1/tweets', {
+    return this.http.post('https://us-central1-minimus-weather.cloudfunctions.net/tweets', {
       data: {q: `${city} Weather`}
     }).pipe(
       first(),

@@ -35,7 +35,7 @@ export class FbService {
     return this.auth.uid()
         .pipe(switchMap((uid) => {
           return this.fs
-              .write(`${uid}/$name`, {name, added: new Date()})
+              .write(`${uid}/${name}`, {name, added: new Date()})
               .pipe(first());
         }), first());
   }
